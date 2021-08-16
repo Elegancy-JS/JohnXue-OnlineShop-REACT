@@ -1,23 +1,49 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import Main from "./components/main";
+import Header from "./components/header";
+import Cart from "./components/cart";
+import itemData from "./components/itemData";
+import { useState } from "react";
 
 function App() {
+  const [chosenItems, setChosenItems] = useState([]);
+  const onAdd = (p) => {
+    const itemExisting = chosenItems.find((item) => item.id === p.id);
+    if (itemExisting) {
+      setChosenItems(
+        chosenItems.map((item) =>
+          item.id === p.id
+            ? { ...itemExisting, qty: itemExisting.qty + 1 }
+            : item
+        )
+      );
+    } else {
+      setChosenItems([...chosenItems, { ...p, qty: 1 }]);
+    }
+  };
+  const onMinus = (p) => {
+    // console.log(p);
+    const itemExisting = chosenItems.find((item) => item.id === p.id);
+    if (itemExisting.qty === 1) {
+      setChosenItems(chosenItems.filter((item) => item.id !== p.id));
+    } else {
+      setChosenItems(
+        chosenItems.map((item) =>
+          item.id === p.id
+            ? { ...itemExisting, qty: itemExisting.qty - 1 }
+            : item
+        )
+      );
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Header />
+      <div className="row">
+        <Main onAdd={onAdd} iData={itemData} />
+        <Cart onAdd={onAdd} onMinus={onMinus} chosenItems={chosenItems} />
+      </div>
     </div>
   );
 }
